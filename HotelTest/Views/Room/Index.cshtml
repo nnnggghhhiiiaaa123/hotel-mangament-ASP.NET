@@ -4,19 +4,21 @@
 }
 
 <h2>Index</h2>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<script >
+<script src="~/scripts/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
     $(document).ready(function () {
+        LoadRoomDetails();
+        $("txtRoomId").val("0");
         $("#btnSave").click(function () {
             SaveRoomData();
         })
     });
 
-    function DeleteRoom(roomId) {
+    function EditRoom(roomId) {
         $.ajax({
             async: true,
             type: 'GET',
-            dataType: 'POST',
+            dataType: 'JSON',
             contentType: 'application/json; charset=utf-8',
             data: { roomId: roomId },
             url: '/Room/EditRoomDetails',
@@ -27,11 +29,14 @@
                 $("#ddRoomType").val(data.RoomTypeId);
                 $("#txtRoomCapacity").val(data.RoomCa);
                 $("#txtRoomDescription").val(data.RoomDescription);
-                f$("#imgRoom").attr('src', "../RoomImages/" + data.RoomImage);
+                $("#imgRoom").attr('src', "../RoomImages/" + data.RoomImage);
                 $("#divAddRoom").modal({ show: true });
+                $("txtRoomId").val(data.RoomId);
+                $("#btnSave").text("Update");
             },
             error: function () {
-                alert('There is some problem to process your request.');        
+                var a = roomId
+                alert('Có lỗi rồi đại vương ơi');        
             }
         })
     }
@@ -60,6 +65,7 @@
 
     function SaveRoomData() {
         var formData = new FormData;
+        formData.append("RoomId", $("#txtRoomId").val());
         formData.append("RoomNumber", $("#txtRoomNumber").val());
         formData.append("RoomPrice", $("#txtRoomPrice").val());
         formData.append("BookingStatusId", $("#ddBookingStatus").val());
@@ -97,6 +103,8 @@
         $("#UploadImage").val('');
         $("#txtRoomNumber").focus ();
         $("#imgRoom").removeAttr('src');
+        $("#txtRoomId").val(0);
+        $("#btnSave").val("Save");
     }
 
     function DisplayImage(result) {

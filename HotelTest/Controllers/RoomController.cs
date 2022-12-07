@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -38,25 +38,52 @@ namespace HotelTest.Controllers
         [HttpPost]
         public ActionResult Index(RoomViewModel objRoomViewModel)
         {
-            string ImageUniqueName = Guid.NewGuid().ToString();
-            string ActualImageName = ImageUniqueName + Path.GetExtension(objRoomViewModel.Image.FileName);
-            objRoomViewModel.Image.SaveAs(Server.MapPath("~/RoomImages/" + ActualImageName));
-            //objHotelEntities
-            Room objRoom = new Room()
+            string message = String.Empty;
+            string ImageUniqueName = String.Empty;
+            string ActualImageName = String.Empty;
+
+            if (objRoomViewModel.RoomId == 0)
             {
-                RoomNumber = objRoomViewModel.RoomNumber,
-                RoomDescription = objRoomViewModel.RoomDescription,
-                RoomPrice = objRoomViewModel.RoomPrice,
-                BookingStatusId = objRoomViewModel.BookingStatusId,
-                //RoomActive đáng ra là IsActive chứ ????
-                RoomActive = true,
-                RoomImage = ActualImageName, 
-                RoomCapacity = objRoomViewModel.RoomCapacity,
-                RoomTypeId = objRoomViewModel.RoomTypeId
-            };
-            objHotelDbEntities.Rooms.Add(objRoom);
+                ImageUniqueName = Guid.NewGuid().ToString();
+                ActualImageName = ImageUniqueName + Path.GetExtension(objRoomViewModel.Image.FileName);
+                objRoomViewModel.Image.SaveAs(Server.MapPath("~/RoomImages/" + ActualImageName));
+                //objHotelEntities
+                Room objRoom = new Room()
+                {
+                    RoomNumber = objRoomViewModel.RoomNumber,
+                    RoomDescription = objRoomViewModel.RoomDescription,
+                    RoomPrice = objRoomViewModel.RoomPrice,
+                    BookingStatusId = objRoomViewModel.BookingStatusId,
+                    RoomActive = true,
+                    RoomImage = ActualImageName,
+                    RoomCapacity = objRoomViewModel.RoomCapacity,
+                    RoomTypeId = objRoomViewModel.RoomTypeId
+                };
+                objHotelDbEntities.Rooms.Add(objRoom);
+                message = "Added.";
+            }
+            else
+            {
+                Room objRoom = objHotelDbEntities.Rooms.Single(model => model.RoomId == objRoomViewModel.RoomId);
+                if (objRoomViewModel.Image != null)
+                {
+                     ImageUniqueName = Guid.NewGuid().ToString();
+                     ActualImageName = ImageUniqueName + Path.GetExtension(objRoomViewModel.Image.FileName);
+                    objRoomViewModel.Image.SaveAs(Server.MapPath("~/RoomImages/" + ActualImageName));
+                    objRoom.RoomImage = ActualImageName;
+                }
+                objRoom.RoomNumber = objRoomViewModel.RoomNumber;
+                objRoom.RoomDescription = objRoomViewModel.RoomDescription;
+                objRoom.RoomPrice = objRoomViewModel.RoomPrice;
+                objRoom.BookingStatusId = objRoomViewModel.BookingStatusId;
+                objRoom.RoomActive = true;  
+                objRoom.RoomCapacity = objRoomViewModel.RoomCapacity;
+                objRoom.RoomTypeId = objRoomViewModel.RoomTypeId;
+                message = "Updated.";
+            }
+            
             objHotelDbEntities.SaveChanges();
-            return Json(new { message= "Room Successfully Added.", success=true }, JsonRequestBehavior.AllowGet); 
+            return Json(new { message= "Room Successfully " + message, success=true }, JsonRequestBehavior.AllowGet); 
         }
 
         public PartialViewResult GetAllRooms()
