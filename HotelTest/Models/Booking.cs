@@ -14,6 +14,7 @@ namespace HotelTest.Models
     
     public partial class Booking
     {
+        //nghia
         public int BookingId { get; set; }
         public string CustomerName { get; set; }
         public Nullable<System.DateTime> BookingFrom { get; set; }
